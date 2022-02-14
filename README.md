@@ -1,4 +1,4 @@
-# Learning GO
+# Monitoring GO
 
 ## A simple monitoring tool to sites of MOVA
 
