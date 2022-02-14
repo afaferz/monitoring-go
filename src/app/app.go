@@ -30,6 +30,7 @@ func main() {
 			initMonitore()
 		case 2:
 			fmt.Println("Showing logs...")
+			showLogs()
 		default:
 			fmt.Println("Command not found! Please select a valid command.")
 			os.Exit(-1)
@@ -137,7 +138,8 @@ func registerLogs(site SiteLog) {
 	file, _ := os.OpenFile(LOGFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	site.Time = time.Now().Format("02/01/2006 15:04:05")
 
-	templateText := `[{{ .Time }}] SITE: {{.Url}} || STATUS_CODE: {{ .StatusCode }} || ONLINE: {{.Online}}`
+	templateText := `[{{- .Time }}] SITE: {{.Url}} || STATUS_CODE: {{ .StatusCode }} || ONLINE: {{.Online}}
+`
 	template := template.Must(template.New("site-log").Parse(templateText))
 
 	if err := template.Execute(file, site); err != nil {
@@ -151,4 +153,16 @@ func registerLogs(site SiteLog) {
 	// 	fmt.Println("----------------------")
 	// }
 	// file.Close()
+}
+
+func showLogs() {
+	LOGFile := fmt.Sprintf("%s/logs.txt", BASE_DIR)
+	file, err := ioutil.ReadFile(LOGFile)
+	if err != nil {
+		fmt.Println("----------------------")
+		fmt.Println("An error in OPEN occurred")
+		fmt.Println(err)
+		fmt.Println("----------------------")
+	}
+	fmt.Println(string(file))
 }
