@@ -1,2 +1,2 @@
 go:
-	go run src/hello/hello.go
+	go run src/app/app.go
