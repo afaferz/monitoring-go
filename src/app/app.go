@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"text/template"
 	"time"
 )
 
@@ -15,7 +16,8 @@ const delay_between_monitoring = 5 // Seconds
 
 func main() {
 	introduction()
-	readJSONSites()
+	siteFake := SiteLog{Url: "https://mova.vc", StatusCode: 200, Online: true}
+	registerLogs(siteFake)
 	for {
 		showMenu()
 		command := getCommandSelected()
@@ -88,12 +90,16 @@ func testSiteStatus(site Site) {
 		fmt.Println("STATUS", response.StatusCode)
 		fmt.Println("ENVIRONMENT:", site.Environment)
 		fmt.Println("Site is OK!")
+		siteToLog := SiteLog{Url: site.Url, StatusCode: response.StatusCode, Online: true}
+		registerLogs(siteToLog)
 	} else {
 		fmt.Println("SITE:", site.Url)
 		fmt.Println("PROJECT:", site.Project)
 		fmt.Println("STATUS:", response.StatusCode)
 		fmt.Println("ENVIRONMENT:", site.Environment)
 		fmt.Println("Site", site, "have a problem :(")
+		siteToLog := SiteLog{Url: site.Url, StatusCode: response.StatusCode, Online: false}
+		registerLogs(siteToLog)
 	}
 }
 
@@ -116,4 +122,33 @@ func readJSONSites() []Site {
 		fmt.Println("----------------------")
 	}
 	return parsedJSON
+}
+
+type SiteLog struct {
+	Url        string
+	StatusCode int
+	Online     bool
+	Time       string
+}
+
+func registerLogs(site SiteLog) {
+	LOGFile := fmt.Sprintf("%s/logs.txt", BASE_DIR)
+
+	file, _ := os.OpenFile(LOGFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	site.Time = time.Now().Format("02/01/2006 15:04:05")
+
+	templateText := `[{{ .Time }}] SITE: {{.Url}} || STATUS_CODE: {{ .StatusCode }} || ONLINE: {{.Online}}`
+	template := template.Must(template.New("site-log").Parse(templateText))
+
+	if err := template.Execute(file, site); err != nil {
+		panic(err)
+	}
+
+	// if err != nil {
+	// 	fmt.Println("----------------------")
+	// 	fmt.Println("An error in CONVERT JSON occurred")
+	// 	fmt.Println(err)
+	// 	fmt.Println("----------------------")
+	// }
+	// file.Close()
 }
