@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 )
 
 func main() {
@@ -47,14 +48,15 @@ func getCommandSelected() int {
 	return command
 }
 
+type TSite struct {
+	url         string
+	environment string
+	project     string
+}
+
 func initMonitore() {
 	fmt.Println("Starting monitoring...")
-	type site struct {
-		url         string
-		environment string
-		project     string
-	}
-	sites_to_monitore := []site{
+	sites_to_monitore := []TSite{
 		{
 			url:         "https://staging-administrativo.mova.vc",
 			environment: "staging",
@@ -82,20 +84,30 @@ func initMonitore() {
 		},
 	}
 
-	for _, site := range sites_to_monitore {
-		response, _ := http.Get(site.url)
-		if response.StatusCode == 200 {
-			fmt.Println("SITE:", site.url)
-			fmt.Println("PROJECT:", site.project)
-			fmt.Println("STATUS", response.StatusCode)
-			fmt.Println("ENVIRONMENT:", site.environment)
-			fmt.Println("Site is OK!")
-		} else {
-			fmt.Println("SITE:", site.url)
-			fmt.Println("PROJECT:", site.project)
-			fmt.Println("STATUS:", response.StatusCode)
-			fmt.Println("ENVIRONMENT:", site.environment)
-			fmt.Println("Site", site, "have a problem :(")
+	for i := 0; i < 5; i++ {
+		fmt.Println("----------------------")
+		fmt.Println("Testing", i+1, "time(s)")
+		fmt.Println("----------------------")
+		for _, site := range sites_to_monitore {
+			testSiteStatus(site)
 		}
+		time.Sleep(5 * time.Second)
+	}
+}
+
+func testSiteStatus(site TSite) {
+	response, _ := http.Get(site.url)
+	if response.StatusCode == 200 {
+		fmt.Println("SITE:", site.url)
+		fmt.Println("PROJECT:", site.project)
+		fmt.Println("STATUS", response.StatusCode)
+		fmt.Println("ENVIRONMENT:", site.environment)
+		fmt.Println("Site is OK!")
+	} else {
+		fmt.Println("SITE:", site.url)
+		fmt.Println("PROJECT:", site.project)
+		fmt.Println("STATUS:", response.StatusCode)
+		fmt.Println("ENVIRONMENT:", site.environment)
+		fmt.Println("Site", site, "have a problem :(")
 	}
 }
