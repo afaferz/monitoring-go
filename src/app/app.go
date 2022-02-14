@@ -7,6 +7,9 @@ import (
 	"time"
 )
 
+const times_of_monitoring = 5
+const delay_between_monitoring = 5 // Seconds
+
 func main() {
 	introduction()
 	for {
@@ -84,14 +87,14 @@ func initMonitore() {
 		},
 	}
 
-	for i := 0; i < 5; i++ {
+	for i := 0; i < times_of_monitoring; i++ {
 		fmt.Println("----------------------")
 		fmt.Println("Testing", i+1, "time(s)")
 		fmt.Println("----------------------")
 		for _, site := range sites_to_monitore {
 			testSiteStatus(site)
 		}
-		time.Sleep(5 * time.Second)
+		time.Sleep(delay_between_monitoring * time.Second)
 	}
 }
 
