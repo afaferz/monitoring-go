@@ -1,0 +1,27 @@
+[
+    {
+        "url": "https://staging-administrativo.mova.vc",
+        "environment": "staging",
+        "project": "administrativo"
+    },
+    {
+        "url": "https://administrativo.mova.vc",
+        "environment": "production",
+        "project": "operacional"
+    },
+    {
+        "url": "https://staging-operacional.mova.vc",
+        "environment": "staging",
+        "project": "operacional"
+    },
+    {
+        "url": "https://operacional.mova.vc",
+        "environment": "production",
+        "project": "operacional"
+    },
+    {
+        "url": "https://mova.vc",
+        "environment": "production",
+        "project": "mova"
+    }
+]
