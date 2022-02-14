@@ -82,8 +82,7 @@ func initMonitore() {
 		},
 	}
 
-	for i := 0; i < len(sites_to_monitore); i++ {
-		site := sites_to_monitore[i]
+	for _, site := range sites_to_monitore {
 		response, _ := http.Get(site.url)
 		if response.StatusCode == 200 {
 			fmt.Println("SITE:", site.url)
